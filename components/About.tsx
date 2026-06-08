@@ -49,7 +49,7 @@ export function About() {
                   <img
                     src={profile.photo}
                     alt={profile.name}
-                    className="h-full w-full object-cover object-[center_25%] saturate-[0.7] transition-all duration-500 group-hover:saturate-100 group-hover:scale-[1.02]"
+                    className="h-full w-full object-cover object-[center_30%] saturate-[0.7] transition-all duration-500 group-hover:saturate-100 group-hover:scale-[1.02]"
                   />
                   {/* blend bottom into ink */}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/15 to-transparent" />
