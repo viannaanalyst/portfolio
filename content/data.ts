@@ -89,7 +89,7 @@ export const skills: SkillGroup[] = [
 export type Project = {
   id: string;
   title: string;
-  category: "RPA + IA" | "RPA" | "ETL" | "Automação" | "BI";
+  category: "RPA + IA" | "RPA" | "ETL" | "Automação" | "BI" | "Data App";
   year: string;
   summary: string;
   problem: string;
@@ -306,6 +306,75 @@ export const projects: Project[] = [
       ],
       nodeCount: 58,
       connectionCount: 44,
+    },
+    featured: false,
+  },
+  {
+    id: "fechamentos-upsell",
+    title: "Fechamentos & Upsell de Vendas",
+    category: "ETL",
+    year: "2026",
+    summary:
+      "Plataforma que consolida, valida e visualiza os fechamentos de vendas e upsells, de fontes dispersas até um dashboard confiável, com um pipeline orquestrado que roda de hora em hora.",
+    problem:
+      "Os dados de vendas (novos fechamentos e upsells) ficavam espalhados entre o CRM, o ERP financeiro e planilhas de ajuste, sem uma fonte única confiável. Isso gerava divergências, retrabalho e falta de visibilidade para a liderança.",
+    solution:
+      "Construí um sistema orquestrado no n8n que roda de hora em hora em horário comercial: captura os deals do CRM e do ERP, consolida no BigQuery, aplica ajustes manuais auditáveis e valida cruzando as fontes (sinalizando divergências no Google Chat), além de calcular MRR e FYV. Um dashboard em Streamlit lê a tabela final e entrega KPIs e gráficos confiáveis.",
+    flow: {
+      in: "Deals (CRM + ERP)",
+      process: "Orquestração + validação (n8n)",
+      out: "Dashboard confiável (Streamlit)",
+    },
+    metric: "14",
+    metricLabel: "pipelines orquestrados de hora em hora",
+    stack: ["n8n", "Python", "Streamlit", "BigQuery", "Plotly", "Google OAuth"],
+    apis: ["Google BigQuery API", "HubSpot (CRM)", "ERP financeiro", "Google Sheets API", "Google Chat API"],
+    diagram: {
+      sources: ["HubSpot (CRM)", "ERP financeiro", "Ajustes manuais (Sheets)"],
+      stages: [
+        { kind: "trigger", label: "Agendamento (de hora em hora)", detail: "Roda em horário comercial, seg a sex" },
+        { kind: "process", label: "Captura deals e upsells", detail: "Do CRM e do ERP para o BigQuery" },
+        { kind: "process", label: "Consolida e mescla ajustes", detail: "Agrega e aplica ajustes manuais auditáveis" },
+        { kind: "decision", label: "Valida e concilia", detail: "Cruza as fontes e detecta divergências", branch: "Notifica no Google Chat" },
+        { kind: "process", label: "Calcula MRR e FYV", detail: "Métricas de receita por período" },
+        { kind: "output", label: "Atualiza o dashboard", detail: "Streamlit + BigQuery para a liderança" },
+      ],
+      runLabel: "Executar orquestrador",
+      scaleLabel: "n8n + Streamlit · 14 pipelines orquestrados",
+    },
+    featured: true,
+  },
+  {
+    id: "folha-pagamento",
+    title: "Folha de Pagamento",
+    category: "Data App",
+    year: "2026",
+    summary:
+      "Portal web interno para o RH consultar custo por colaborador, simular salários e gerenciar contratos PJ, lendo e escrevendo direto no BigQuery, com controle de acesso por página e auditoria completa.",
+    problem:
+      "O RH precisava de uma interface própria e segura para dados sensíveis de folha (remuneração, dados bancários), com controle de acesso por página e domínio próprio. A solução anterior, em Streamlit, não permitia login próprio nem esse nível de controle.",
+    solution:
+      "Reescrevi o dashboard em Next.js (App Router, com server components e server actions), com login Google restrito ao domínio da empresa e controle de acesso por página em três camadas. Inclui um motor de cálculo de impostos (INSS, IRRF, FGTS) validado, auditoria append-only de cada alteração e uma esteira de contratos PJ que move o Kanban sozinho via webhooks e arquiva o PDF assinado.",
+    flow: {
+      in: "Dados de folha (BigQuery)",
+      process: "App Next.js (acesso + auditoria)",
+      out: "Portal seguro do RH",
+    },
+    metric: "3 camadas",
+    metricLabel: "de segurança no acesso a dados sensíveis",
+    stack: ["Next.js", "React", "TypeScript", "BigQuery", "Auth.js", "Tailwind", "shadcn/ui"],
+    apis: ["Google BigQuery API", "Google OAuth", "Google Cloud Storage", "Contraktor (assinatura)", "Webhook (n8n)"],
+    diagram: {
+      stages: [
+        { kind: "trigger", label: "Login (Google OAuth)", detail: "Restrito ao domínio da empresa" },
+        { kind: "decision", label: "Controle de acesso por página", detail: "3 camadas: sidebar, página e server action" },
+        { kind: "process", label: "Lê os dados no BigQuery", detail: "Via server components" },
+        { kind: "process", label: "Simula custos e impostos", detail: "Motor INSS / IRRF / FGTS validado" },
+        { kind: "process", label: "Grava com auditoria", detail: "Server actions + log append-only" },
+        { kind: "output", label: "Esteira de contratos PJ", detail: "Webhooks movem o Kanban e arquivam o PDF assinado" },
+      ],
+      runLabel: "Executar fluxo",
+      scaleLabel: "Next.js + BigQuery · server actions & auditoria",
     },
     featured: false,
   },
